@@ -7,6 +7,7 @@ import com.evernote.auth.EvernoteService;
 import com.evernote.clients.ClientFactory;
 import com.evernote.clients.NoteStoreClient;
 import com.evernote.clients.UserStoreClient;
+import com.evernote.edam.error.EDAMNotFoundException;
 import com.evernote.edam.error.EDAMSystemException;
 import com.evernote.edam.error.EDAMUserException;
 import com.evernote.edam.notestore.NoteFilter;
@@ -18,8 +19,8 @@ import com.evernote.thrift.TException;
 public class Note {
 	private static final String developerToken = "S=s1:U=90bb4:E=15441b12eea:C=14cea0000b8:P=1cd:A=en-devtoken:V=2:H=3c703968dba737902da41dc9d81e3a04";
 
-//	private final long id;
-//	private final String body;
+	private  long id;
+	private  String body;
 
 	private UserStoreClient userStore;
 	private NoteStoreClient noteStore;
@@ -46,13 +47,21 @@ public class Note {
 
 	}
 
-//	public long getId() {
-//		return id;
-//	}
-//
-//	public String getBody() {
-//		return body;
-//	}
+	public void setId(Long id) {
+		 this.id= id;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setBody(String body) {
+		this.body= body;
+	}
+
+	public String getBody() {
+		return body;
+	}
 
 
 	public List<com.evernote.edam.type.Note> listNotes() throws Exception {
@@ -71,6 +80,17 @@ public class Note {
 		return notes;
 	}
 
+	public com.evernote.edam.type.Note getNote(String guid) throws EDAMUserException, EDAMSystemException, TException, EDAMNotFoundException {
+		com.evernote.edam.type.Note note = noteStore.getNote(guid, true, true, false, false);
+		return note;
+	}
 
+	public com.evernote.edam.type.Note createNote(String userNote) throws EDAMUserException, EDAMSystemException, TException, EDAMNotFoundException {
+		com.evernote.edam.type.Note note = new com.evernote.edam.type.Note();
+		note.setTitle(userNote);
+		com.evernote.edam.type.Note createdNote = noteStore.createNote(note);
+		newNoteGuid = createdNote.getGuid();
+		return createdNote;
+	}
 
 }
